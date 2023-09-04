@@ -35,3 +35,11 @@ WITH country, book.title AS title, r.rating AS rating
 ORDER BY country, rating DESC
 WITH country, COLLECT({title: title})[0..10] AS topRatedBooks
 RETURN country, topRatedBooks;
+
+// Given a user it provides other user with same similarities
+MATCH (targetUser:User {userId: 16795})-[r:RATED]->(targetBook:Book)
+WITH targetUser, COLLECT(targetBook.isbn) AS targetUserPreferences
+MATCH (otherUser:User)-[r:RATED]->(book:Book)
+WHERE otherUser <> targetUser AND book.isbn IN targetUserPreferences AND r.rating > 7
+RETURN otherUser.userId as SimilarUser, COLLECT(DISTINCT book.title) AS booksReadBySimilarUsers LIMIT 10
+
