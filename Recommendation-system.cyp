@@ -27,13 +27,13 @@ CALL gds.graph.project(
     'books_embedding',
     {
         User: {properties:'embedding'},
-        Book: {properties:'embedding'}
+        //Book: {properties:'embedding'}
     },
     '*'
 )
 
 // run KNN to estimate similarity (a.k.a. SIMILAR) relationships 
-// between users articles and write them back to the graph
+// between users rated books and write them back to the graph
 CALL gds.knn.write('books_embedding', {
     nodeLabels: ['User'],
     nodeProperties: ['embedding'],
@@ -48,13 +48,29 @@ YIELD nodesCompared, relationshipsWritten, similarityDistribution
 RETURN nodesCompared, relationshipsWritten, similarityDistribution.mean as meanSimilarity
 
 // Get similar user for a target user
-MATCH (targetUser:User {userId: 9659})-[r:SIMILAR]->(similarUser:User)
-RETURN targetUser.userId as person1, similarUser.userId as person2, r.score as similarity
-ORDER BY similarity DESCENDING, person1, person2 
+MATCH (targetUser:User {userId: 67932})-[r:SIMILAR]->(similarUser:User)
+RETURN similarUser.userId as UID, r.score as similarity
+ORDER BY similarity DESCENDING
+
+// Get similar user from the same location of the target user
+MATCH (l1:Location)<-[lives1:LIVES_IN]-(targetUser:User {userId: 67932})-[r:SIMILAR]->(similarUser:User)-[lives2:LIVES_IN]->(l2:Location)
+WHERE l1.country = l2.country AND s.score >= 0.5
+RETURN similarUser.userId as UID, r.score as similarity, l1.country as country
+ORDER BY similarity DESCENDING, UID, country
+
+// Get the ratio between the user coming from the same location and the total amount of similar user
+MATCH (l1:Location)<-[lives1:LIVES_IN]-(targetUser:User {userId: 67932})-[s:SIMILAR]->(similarUser:User)-[lives2:LIVES_IN]->(l2:Location)
+WHERE l1.country = l2.country AND s.score >= 0.6
+WITH COUNT(*) as similarUserFromSameLocationCount
+MATCH (targetUser:User {userId: 67932})-[:SIMILAR]->(similarUser:User)
+WITH similarUserFromSameLocationCount, COUNT(similarUser) as similarUserCount
+RETURN toFloat(similarUserFromSameLocationCount) / toFloat(similarUserCount) as similarUserCountryRatio
+
 
 // Get suggested book according to similarity score for a given user
-MATCH (targetUser:User {userId: 9659})-[similar:SIMILAR]->(similarUser:User)
-WHERE similar.score > 0.9
-WITH targetUser, similarUser, similar
-MATCH (similarUser)-[rated:RATED]->(b:Book)
-RETURN targetUser.userId as targetUser, COLLECT(DISTINCT b.title) as SuggestedBook   
+MATCH (targetUser:User {userId: 67932})-[similar:SIMILAR]->(similarUser:User)-[rated:RATED]->(b:Book)
+WHERE similar.score >= 0.6
+WITH COLLECT(DISTINCT b.title) as similarBooks
+UNWIND similarBooks as books
+RETURN books ORDER BY books
+

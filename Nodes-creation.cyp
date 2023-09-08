@@ -1,39 +1,43 @@
 // Load Location.csv to create Location nodes
-LOAD CSV WITH HEADERS FROM 'file:///Location.csv' AS row WITH row  WHERE row.Country IS NOT NULL
+LOAD CSV WITH HEADERS FROM 'file:///Location.csv' AS row WITH row  WHERE row.Country IS NOT NULL and row.Province IS NOT NULL
 MERGE (location:Location {country: row.Country, province: row.Province});
 
-// TODO test if it works, if yes remove LIVES_IN creation below
-// Load location and user file and create a relation between user and book based on rating
-CALL apoc.periodic.iterate(
-  'LOAD CSV WITH HEADERS FROM "file:///Users_file.csv" AS row RETURN row',
-  'MATCH (l:Location {country: row.Country, provence: row.Provence}) MERGE (user:User {userId: toInteger(row.`User-ID`), age:toFloat(row.Age))-[r:LIVES_IN]->(l);',
-  { batchSize: 1000, parallel: false }
-);
+
+// Load location and user file and create a relation between user and book based on rating, it also removes user without age
+LOAD CSV WITH HEADERS FROM "file:///Users_file.csv" AS row 
+:auto CALL {
+  WITH row
+  MATCH (l:Location {country: row.Country, province: row.Province}) 
+  MERGE (user:User {userId: toInteger(row.`User-ID`)})-[r:LIVES_IN]->(l)
+   ON CREATE SET user.age = row.Age
+   
+} IN TRANSACTIONS OF 10000 ROWS
+
 
 // Load book csv file and create book nodes
-CALL apoc.periodic.iterate(
-  'LOAD CSV WITH HEADERS FROM "file:///Books_file.csv" AS row RETURN row',
-  'CREATE (book:Book {isbn: row.ISBN, title: row.`Book-Title`, author: row.`Book-Author`, year: row.`Year-Of-Publication`, publisher: row.Publisher})',
-  { batchSize: 1000, parallel: false }
-);
-
-// Load rating csv and create a relation between user and book based on rating
-CALL apoc.periodic.iterate(
-  'LOAD CSV WITH HEADERS FROM "file:///Ratings_file.csv" AS row RETURN row',
-  'MATCH (user:User {userId: toInteger(row.`User-ID`)}),(book:Book {isbn: row.ISBN}) MERGE (user)-[r:RATED {rating:toInteger(row.`Book-Rating`)}]->(book);',
-  { batchSize: 1000, parallel: false }
-);
+LOAD CSV WITH HEADERS FROM "file:///Books_file.csv" AS row 
+:auto CALL {
+  WITH row
+  CREATE (book:Book {isbn: row.ISBN, title: row.`Book-Title`, author: row.`Book-Author`, year: row.`Year-Of-Publication`, publisher: row.Publisher})
+  
+} IN TRANSACTIONS OF 10000 ROWS
 
 
-// Create an index on location to avoid cartesian product
-CREATE INDEX index_location IF NOT EXISTS FOR (l:Location) ON (l.country, l.province)
+// Create a relationship between user and book that have rated that book
+LOAD CSV WITH HEADERS FROM "file:///Ratings_file.csv" AS row 
+:auto CALL {
+  WITH row
+  MATCH (user:User {userId: toInteger(row.`User-ID`)}),(book:Book {isbn: row.ISBN}) 
+  MERGE (user)-[r:RATED {rating:toInteger(row.`Book-Rating`)}]->(book)
+} IN TRANSACTIONS OF 10000 ROWS
 
-// Create relation between user and location
-MATCH (user:User)
-WHERE user.country IS NOT NULL AND user.province IS NOT NULL
-WITH user
-MERGE (location:Location {country: user.country, province: user.province})
-MERGE (user)-[:LIVES_IN]->(location);
+
+// Remove users that have not rated a book
+:auto CALL {
+    MATCH (node:User)
+    WHERE NOT EXISTS((node)-[:RATED]->())
+    DETACH DELETE node
+} IN TRANSACTIONS OF 10000 ROWS
 
 
 
