@@ -16,6 +16,9 @@ with aggregate functions and machine learning module of the Neo4j Graph Data Sci
 without the need to extract data via queries and process them subsequently. On the other hand in PostgreSQL is not possible
 to do the same type of operations directly on the data, but you need to extract them and build a Neural Network to realize a recommendation system.
 
+# Implementation
+In order to interact with the recommendation system I implemented a simple webapp using flask where you can type the user id and it returns the list of suggested books based on similarities between user with same preferences.
+
 # Results
 The results show how Graph databases like Neo4j are particularly well-suited for scenarios where relationships between data are crucial, they also provide
 better scalability with more users. On the other side when you need a predefined organization of data Relation DBMS are the best choices.
