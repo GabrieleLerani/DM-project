@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  webapp:
+    container_name: webapp
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - DB_TYPE=PG
+
+    network_mode: host
+    
+    # depends_on:
+    #   - postgres
+    #   - neo4j
+  
+  # postgres:
+  #   container_name: postgres
+  #   image: postgres:latest
+  #   ports:
+  #     - "5435:5435"
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=postgres
+  #     - PGPORT=5435
+    
+  #   volumes:
+  #     - ./pg_backup:/docker-entrypoint-initdb.d
+
+
+  # neo4j:
+  #   container_name: neo4j
+  #   image: neo4j:latest
+  #   ports:
+  #     - 7474:7474
+  #     - 7687:7687
+  #   environment:
+  #     - NEO4J_AUTH=neo4j/password
+  #     - NEO4J_PLUGINS=["graph-data-science"]    
+
+  #   command: >
+  #     bash -c "
+  #     cp /neo4j_backup/neo4j.dump /var/lib/neo4j/
+  #     "  
+
+  #   volumes:
+  #     - ./neo4j_db/data:/data
+  #     - ./neo4j_db/logs:/logs
+  #     - ./neo4j_db/import:/var/lib/neo4j/import
+  #     - ./neo4j_db/plugins:/plugins
+      
+
+  # neo4j: 
+  #   container_name: neo4j
+  #   build: 
+  #     dockerfile: neo4j-dockerfile
+  #   ports:
+  #     - 7474:7474
+  #     - 7687:7687
+  #   environment:
+  #     - EXTENSION_SCRIPT=/neo4j-dockerfile/extension_script.sh
+  #     - NEO4J_AUTH=neo4j/password
+  #     - NEO4J_PLUGINS=["graph-data-science"]    
+  #   volumes:
+  #     - ./neo4j_backup:/neo4j_backup

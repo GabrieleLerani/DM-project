@@ -1,0 +1,98 @@
+{% extends "base.html" %} 
+{% block title %}Insert book{% endblock %} 
+{% block content %}
+  <!-- Display flashed messages -->
+  <!-- {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="flashes">
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  {% endwith %} -->
+
+  
+  {% with messages = get_flashed_messages(with_categories=true) %} 
+    {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissable fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+
+  {% if not messages %}
+    <form method="POST">
+      <h3 align="center">Insert book</h3>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          type="title"
+          class="form-control"
+          id="title"
+          name="title"
+          placeholder="Enter title"
+        />
+      </div>
+      <div class="form-group">
+        <label for="author">Author</label>
+        <input
+          type="author"
+          class="form-control"
+          id="author"
+          name="author"
+          placeholder="Enter author"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="year">Year</label>
+        <input
+          type="year"
+          class="form-control"
+          id="year"
+          name="year"
+          placeholder="Enter year"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="publisher">Publisher</label>
+        <input
+          type="publisher"
+          class="form-control"
+          id="publisher"
+          name="publisher"
+          placeholder="Enter publisher"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="isbn">Isbn</label>
+        <input
+          type="isbn"
+          class="form-control"
+          id="isbn"
+          name="isbn"
+          placeholder="Enter isbn"
+        />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary">Confirm</button>
+    </form>
+  {% endif %}
+{% endblock %}

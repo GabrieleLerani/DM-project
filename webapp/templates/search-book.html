@@ -1,0 +1,27 @@
+{% extends "base.html" %} {% block title %}Search book{% endblock %} {% block content %}
+
+    <section class="section">
+        <div class="columns">
+        <div class="column is-one-third is-offset-one-third">
+            <label for="text">Book title</label>
+            <input type="text" class="input" placeholder="Search" name="q" hx-get="/search-by-book" hx-trigger="keyup changed delay:500ms" hx-target="#results">
+        </div>
+        </div>
+        <table class="table is-fullwidth">
+        <thead>
+            <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publisher</th>
+            <th>Year</th>
+            <th>ISBN</th>
+            </tr>
+        </thead>
+        <tbody id="results">
+
+        </tbody>
+        </table>
+    </section>
+
+
+{% endblock %}

@@ -1,0 +1,11 @@
+__pycache__
+.vscode
+.venv
+cleaned_dataset
+cleaned_dataset
+dataset_cleaner
+database_backup
+dataset
+load_test
+Queries
+webapp/__pycache__
