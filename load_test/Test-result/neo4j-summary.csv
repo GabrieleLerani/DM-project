@@ -1,0 +1,6 @@
+Label,# Samples,Average,Min,Max,Std. Dev.,Error %,Throughput,Received KB/sec,Sent KB/sec,Avg. Bytes
+Similar User,25,64,0,196,32.82,0.000%,1.03890,0.25,0.00,249.0
+Highest book,25,372,0,768,115.88,0.000%,1.02978,0.25,0.00,249.0
+Highest book by rating for country,25,1322,0,1917,254.88,0.000%,.98479,0.24,0.00,249.0
+Book by title,25,491,0,756,119.06,0.000%,1.00664,0.24,0.00,249.0
+TOTAL,100,562,0,1917,489.98,0.000%,3.81257,0.93,0.00,249.0
