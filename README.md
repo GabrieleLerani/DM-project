@@ -19,6 +19,10 @@ to do the same type of operations directly on the data, but you need to extract 
 # Implementation
 In order to interact with the recommendation system I implemented a simple webapp using flask where you can type the user id and it returns the list of suggested books based on similarities between user with same preferences.
 
+# Usage
+Run the following command once you have created the docker image from the dockerfile:
+docker run --name webapp -p 5001:5001 -e DB_TYPE=NEO4J --network host dm-webapp
+
 # Results
 The results show how Graph databases like Neo4j are particularly well-suited for scenarios where relationships between data are crucial, they also provide
 better scalability with more users. On the other side when you need a predefined organization of data Relation DBMS are the best choices.
