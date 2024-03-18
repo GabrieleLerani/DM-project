@@ -21,7 +21,7 @@ In order to interact with the recommendation system I implemented a simple webap
 
 # Usage
 Run the following command once you have created the docker image from the dockerfile:
-docker run --name webapp -p 5001:5001 -e DB_TYPE=NEO4J --network host dm-webapp
+`docker run --name webapp -p 5001:5001 -e DB_TYPE=NEO4J --network host dm-webapp`
 
 # Results
 The results show how Graph databases like Neo4j are particularly well-suited for scenarios where relationships between data are crucial, they also provide
